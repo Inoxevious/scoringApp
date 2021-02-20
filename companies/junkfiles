@@ -1,0 +1,642 @@
+class RetentionAPIView(APIView):
+    def get(self, request, *args, **kw):
+        # filter the queryset based on the filters applied
+        global qry
+        pagination_class = StandardResultsSetPagination
+        qry = Loan_History.objects.all()[:10]
+        NAME_INCOME_TYPE = self.request.query_params.get('business', None)
+        ORGANIZATION_TYPE = self.request.query_params.get('mortage', None)
+        OCCUPATION_TYPE = self.request.query_params.get('funeral', None)
+        CODE_GENDER = self.request.query_params.get('school', None)
+        sort_by = self.request.query_params.get('sort_by', None)
+
+
+        if NAME_INCOME_TYPE:
+            qry = Loan_History.objects.filter(NAME_INCOME_TYPE = NAME_INCOME_TYPE)[:5]
+
+        if ORGANIZATION_TYPE:
+            qry = Loan_History.objects.filter(ORGANIZATION_TYPE = ORGANIZATION_TYPE)[:5]
+
+        if OCCUPATION_TYPE:
+            qry = Loan_History.objects.filter(OCCUPATION_TYPE = OCCUPATION_TYPE)[:5]
+        if CODE_GENDER:
+            qry = Loan_History.objects.filter(CODE_GENDER = CODE_GENDER)[:5]  
+        # sort it if applied on based on price/points
+        if sort_by == "income":
+            qry = qry.order_by("AMT_INCOME_TOTAL")
+        elif sort_by == "credit_amount":
+            qry = qry.order_by("AMT_CREDIT")
+# get predictions for applications scoring predictions
+        retention_scoring_data = gpred.get_retention_scores(qry)
+        return Response(data={
+            # 'labels': labels,
+            # 'pagination_class':pagination_class,
+            'retention_scoring_data': retention_scoring_data,
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+    for ln in loan:
+        query_object_data_dict[ln.client_id] = []
+        # client_info = {'age': ln.client.age, 'workclass': 'Private', 'fnlwgt': 70984, 'education': 'Assoc-voc', 'education-num': 11, 'marital-status': 'Married-civ-spouse', 'occupation': 'Machine-op-inspct', 'relationship': 'Husband', 'race': 'White', 'sex': 'Male', 'capital-gain': 0, 'capital-loss': 0, 'hours-per-week': 40, 'native-country': 'United-States'},
+        query_object_data_dict[ln.client_id].append(model_to_dict(ln))
+        # query_object_data_dict = {
+        #     ln.client_id: client_info
+        # }
+    print("query object data", query_object_data_dict)
+    qury_predict_dict_data = {}
+    for d_id, d_info in query_object_data_dict.items():
+        print("\nQuery Data ID:", d_id)
+        for key in d_info:
+            qury_predict_dict_data[d_id] = []
+            
+            print(key) 
+            prediction = algorithm_object.compute_prediction(key)
+            qury_predict_dict_data[d_id].append(prediction)
+        print("Query  Predictions data", qury_predict_dict_data)
+
+    for ln in loan:
+        data = {
+            ln.client_id:{'age': 32, 'workclass': 'Private', 'fnlwgt': 70984, 'education': 'Assoc-voc', 'education-num': 11, 'marital-status': 'Married-civ-spouse', 'occupation': 'Machine-op-inspct', 'relationship': 'Husband', 'race': 'White', 'sex': 'Male', 'capital-gain': 0, 'capital-loss': 0, 'hours-per-week': 40, 'native-country': 'United-States'},
+            }
+        
+    print("data", data)
+    for d_id, d_info in data.items():
+        prediction = algorithm_object.compute_prediction(d_info)
+        prediction["cust_id"] = d_id
+        print( 'Prediction:', prediction)
+
+
+    label = prediction["label"] if "label" in prediction else "error"
+    ml_request = MLRequest(
+        input_data=input_data,
+        full_response=prediction,
+        response=label,
+        feedback="",
+        parent_mlalgorithm=algs[alg_index],
+    )
+    ml_request.save()
+
+    prediction["request_id"] = ml_request.id
+    context = {
+        'income_classifier_prediction': prediction,
+        'loan': loan,
+    }
+
+
+    SK_ID_CURR = row[0],TARGET = row[1],NAME_CONTRACT_TYPE = row[2],CODE_GENDER = row[3],FLAG_OWN_CAR = row[4],FLAG_OWN_REALTY = row[5],CNT_CHILDREN = row[6],AMT_INCOME_TOTAL = row[7],AMT_CREDIT = row[8],AMT_ANNUITY = row[9],AMT_GOODS_PRICE = row[10],NAME_TYPE_SUITE = row[11],NAME_INCOME_TYPE = row[12],NAME_EDUCATION_TYPE = row[13],NAME_FAMILY_STATUS = row[14],NAME_HOUSING_TYPE = row[15],REGION_POPULATION_RELATIVE = row[16],DAYS_BIRTH = row[17],DAYS_EMPLOYED = row[18],DAYS_REGISTRATION = row[19],DAYS_ID_PUBLISH = row[20],OWN_CAR_AGE = row[21],FLAG_MOBIL = row[22],FLAG_EMP_PHONE = row[23],FLAG_WORK_PHONE = row[24],FLAG_CONT_MOBILE = row[25],FLAG_PHONE = row[26],FLAG_EMAIL = row[27],OCCUPATION_TYPE = row[28],CNT_FAM_MEMBERS = row[29],REGION_RATING_CLIENT = row[30],REGION_RATING_CLIENT_W_CITY = row[31],WEEKDAY_APPR_PROCESS_START = row[32],HOUR_APPR_PROCESS_START = row[33],REG_REGION_NOT_LIVE_REGION = row[34],REG_REGION_NOT_WORK_REGION = row[35],LIVE_REGION_NOT_WORK_REGION = row[36],REG_CITY_NOT_LIVE_CITY = row[37],REG_CITY_NOT_WORK_CITY = row[38],LIVE_CITY_NOT_WORK_CITY = row[39],ORGANIZATION_TYPE = row[40],EXT_SOURCE_1 = row[41],EXT_SOURCE_2 = row[42],EXT_SOURCE_3 = row[43],APARTMENTS_AVG = row[44],BASEMENTAREA_AVG = row[45],YEARS_BEGINEXPLUATATION_AVG = row[46],YEARS_BUILD_AVG = row[47],COMMONAREA_AVG = row[48],ELEVATORS_AVG = row[49],ENTRANCES_AVG = row[50],FLOORSMAX_AVG = row[51],FLOORSMIN_AVG = row[52],LANDAREA_AVG = row[53],LIVINGAPARTMENTS_AVG = row[54],LIVINGAREA_AVG = row[55],NONLIVINGAPARTMENTS_AVG = row[56],NONLIVINGAREA_AVG = row[57],APARTMENTS_MODE = row[58],BASEMENTAREA_MODE = row[59],YEARS_BEGINEXPLUATATION_MODE = row[60],YEARS_BUILD_MODE = row[61],COMMONAREA_MODE = row[62],ELEVATORS_MODE = row[63],ENTRANCES_MODE = row[64],FLOORSMAX_MODE = row[65],FLOORSMIN_MODE = row[66],LANDAREA_MODE = row[67],LIVINGAPARTMENTS_MODE = row[68],LIVINGAREA_MODE = row[69],NONLIVINGAPARTMENTS_MODE = row[70],NONLIVINGAREA_MODE = row[71],APARTMENTS_MEDI = row[72],BASEMENTAREA_MEDI = row[73],YEARS_BEGINEXPLUATATION_MEDI = row[74],YEARS_BUILD_MEDI = row[75],COMMONAREA_MEDI = row[76],ELEVATORS_MEDI = row[77],ENTRANCES_MEDI = row[78],FLOORSMAX_MEDI = row[79],FLOORSMIN_MEDI = row[80],LANDAREA_MEDI = row[81],LIVINGAPARTMENTS_MEDI = row[82],LIVINGAREA_MEDI = row[83],NONLIVINGAPARTMENTS_MEDI = row[84],NONLIVINGAREA_MEDI = row[85],FONDKAPREMONT_MODE = row[86],HOUSETYPE_MODE = row[87],TOTALAREA_MODE = row[88],WALLSMATERIAL_MODE = row[89],EMERGENCYSTATE_MODE = row[90],OBS_30_CNT_SOCIAL_CIRCLE = row[91],DEF_30_CNT_SOCIAL_CIRCLE = row[92],OBS_60_CNT_SOCIAL_CIRCLE = row[93],DEF_60_CNT_SOCIAL_CIRCLE = row[94],DAYS_LAST_PHONE_CHANGE = row[95],FLAG_DOCUMENT_2 = row[96],FLAG_DOCUMENT_3 = row[97],
+
+
+
+        algorithm_status = "production"
+        # algorithm_version = self.request.query_params.get("version")
+        algorithm_version = None
+        endpoint_name = 'income_classifier'
+        print("End point name found", endpoint_name)
+        if endpoint_name == 'income_classifier':
+            algorithm_object = RandomForestClassifier()
+        elif endpoint_name == 'application_classifier':
+            algorithm_object = RandomForestApplicationClassifier()
+        object_data_dict = {}
+        loan = Loan_History.objects.all()
+        for ln in loan:
+            object_data_dict[ln.LOAN_ID] = []
+            data ={'age': 32, 'workclass': 'Private', 'fnlwgt': ln.DAYS_EMPLOYED, 'education': 'Assoc-voc', 'education-num': ln.DAYS_REGISTRATION, 'marital-status': 'Married-civ-spouse', 'occupation': ln.OCCUPATION_TYPE, 'relationship': 'Husband', 'race': 'White', 'sex': ln.CODE_GENDER, 'capital-gain': 0, 'capital-loss': 0, 'hours-per-week': 40, 'native-country': 'United-States'},
+            object_data_dict[ln.LOAN_ID].append(data)
+            print("object data", object_data_dict)
+        predict_dict_data = {}
+        for d_id, d_info in object_data_dict.items():
+            print("\nQuery Data ID:", d_id)
+            for key in d_info:
+                predict_dict_data[d_id] = []
+                input_data = key
+                print("Key value", key)
+                # prediction here
+                prediction = algorithm_object.compute_prediction(key)
+                print("Prediction Error",prediction )
+                prediction["cust_id"] = d_id #result here as a probability
+                # print(prediction['probability'])
+                if  prediction['probability'] > 0.67:
+                    color = 'red'
+                    text = 'high risk of defaulting the loan'
+                    prediction["color"] = color
+                    prediction["text"] = text
+                    print('Client with ID # {} has a high risk of defaulting the loan'.format(d_id))
+                elif  prediction['probability'] > 0.33:
+                    color = 'blue'
+                    text = 'moderate risk of defaulting the loan'
+                    prediction["color"] = color
+                    prediction["text"] = text
+                    print('Client with ID # {} has a moderate risk of defaulting the loan'.format(d_id))
+                else:
+                    color = 'green'
+                    text = 'low risk of defaulting the loan'
+                    prediction["color"] = color
+                    prediction["text"] = text
+                    print('Client with ID # {} has a low risk of defaulting the loan'.format(d_id))
+                predict_dict_data[d_id].append(prediction)
+            print( 'Prediction:', predict_dict_data)
+
+
+        label = prediction["label"] if "label" in prediction else "error"
+        ml_request = MLRequest(
+            input_data=input_data,
+            full_response=prediction,
+            response=label,
+            feedback="",
+            parent_mlalgorithm=algs,
+        )
+        ml_request.save()
+
+
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chart JS Data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        data = Loan_History.objects.all()
+        return_data = log.grade_avg(data)
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~Chart JS Data End ~~~~~~~~~~~~~~~~~~~~~~
+        if sort_by == "income":
+            queryList = queryList.order_by("AMT_INCOME_TOTAL")
+        elif sort_by == "credit_amount":
+            queryList = queryList.order_by("AMT_CREDIT")
+        prediction["request_id"] = ml_request.id
+        context = {
+            'income_classifier_prediction': predict_dict_data,
+            'loan': loan,
+            'user_name':user_name,
+            'acc_user':acc_user,
+            'webdata':return_data
+        }
+def get_predictions(request):
+    if request.method == "POST" and request.is_ajax:
+        body = json.loads(request.body)
+        requestData = {}
+        for item in body:
+            name = item['name']
+            requestData[name] = item
+
+    algorithm_status = "production"
+    # algorithm_version = self.request.query_params.get("version")
+    algorithm_version = None
+    endpoint_name = 'income_classifier'
+    if endpoint_name == 'income_classifier':
+        algorithm_object = RandomForestClassifier()
+    elif endpoint_name == 'application_classifier':
+        algorithm_object = RandomForestApplicationClassifier()
+    object_data_dict = {}
+    loan = Loan_History.objects.all()[:50]
+    for ln in loan:
+        object_data_dict[ln.LOAN_ID] = []
+        data ={'age': 32, 'workclass': 'Private', 'fnlwgt': ln.DAYS_EMPLOYED, 'education': 'Assoc-voc', 'education-num': ln.DAYS_REGISTRATION, 'marital-status': 'Married-civ-spouse', 'occupation':'Machine-op-inspct', 'relationship': 'Husband', 'race': 'White', 'sex':'Male', 'capital-gain': 0, 'capital-loss': 0, 'hours-per-week': 40, 'native-country': 'United-States'},
+        object_data_dict[ln.LOAN_ID].append(data)
+    predict_dict_data = {}
+    for d_id, d_info in object_data_dict.items():
+    
+        for key in d_info:
+            predict_dict_data[d_id] = []
+            input_data = key
+        
+            # prediction here
+            prediction = algorithm_object.compute_prediction(key)
+            prediction["loan_id"] = d_id #result here as a probability
+            # print(prediction['probability'])
+            if  prediction['probability'] > 0.67:
+                color = 'red'
+                text = 'high risk of defaulting the loan'
+                prediction["color"] = color
+                prediction["text"] = text
+            elif  prediction['probability'] > 0.33:
+                color = 'blue'
+                text = 'moderate risk of defaulting the loan'
+                prediction["color"] = color
+                prediction["text"] = text
+            else:
+                color = 'green'
+                text = 'low risk of defaulting the loan'
+                prediction["color"] = color
+                prediction["text"] = text
+            
+
+    # data = serializers.serialize('json', prediction)
+    return JsonResponse(data=prediction)
+
+
+class Loan_HistoryListing(ListAPIView):
+    # set the pagination and serializer class
+
+	pagination_class = StandardResultsSetPagination
+	serializer_class = Loan_HistorySerializers
+
+	def get_queryset(self):
+        # filter the queryset based on the filters applied
+		queryList = Loan_History.objects.all()
+        #dummy for business filter is NAME_INCOME_TYPE
+		NAME_INCOME_TYPE = self.request.query_params.get('business', None)
+
+		ORGANIZATION_TYPE = self.request.query_params.get('mortage', None)
+		OCCUPATION_TYPE = self.request.query_params.get('funeral', None)
+		CODE_GENDER = self.request.query_params.get('school', None)
+		sort_by = self.request.query_params.get('sort_by', None)
+
+
+		if NAME_INCOME_TYPE:
+		    queryList = queryList.filter(NAME_INCOME_TYPE = NAME_INCOME_TYPE)
+
+		if ORGANIZATION_TYPE:
+		    queryList = queryList.filter(ORGANIZATION_TYPE = ORGANIZATION_TYPE)
+
+		if OCCUPATION_TYPE:
+		    queryList = queryList.filter(OCCUPATION_TYPE = OCCUPATION_TYPE)
+		if CODE_GENDER:
+		    queryList = queryList.filter(CODE_GENDER = CODE_GENDER)    
+
+
+		if sort_by == "income":
+		    queryList = queryList.order_by("AMT_INCOME_TOTAL")
+		elif sort_by == "credit_amount":
+		    queryList = queryList.order_by("AMT_CREDIT")
+		return queryList
+
+
+
+
+
+
+
+
+        {% load static %}
+
+<!-- Individual column searching (selects) -->
+<div class="panel panel-flat">
+    <div class="panel-heading">
+        <h5 class="panel-title">Individual column searching</h5>
+        <div class="heading-elements">
+            <ul class="icons-list">
+                <li><a data-action="collapse"></a></li>
+                <li><a data-action="reload"></a></li>
+                <li><a data-action="close"></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel-body">
+    </div>
+
+    <table class="table table-sm" id="list_data" data-toggle="table" url="{% url 'companies:get_predictions' %}">
+        <thead>
+            <tr>
+                <th>Loan ID</th>
+
+                <th>Client</th>
+                <!-- <th>Amount Borrowed</th> -->
+                <th>First Instalment</th>
+                <th>Final Instalment</th>
+                <th>Total Instalment</th>
+                <th>Defaulting Probability</th>
+                <th>Default Risk</th>
+                <th>Time to default</th>
+                <th>Contact Channel</th>
+                <th>Contact Schedule</th>
+                <th>Message</th>
+                <th><i class="icon-arrow-down12"></i></th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for cl in loan %}
+            <tr>
+                <td>{{cl.LOAN_ID}}</td>
+
+                <!-- <td><a href="#">{{cl.colleteral}}</a></td> -->
+                {% for d_id, d_info in predict_dict_data.items  %}
+
+                {% if d_id == cl.LOAN_ID   %}
+                {% for l in d_info %}
+                <td>
+                    <span class=''>
+                        {{l.cust_id}}
+                    </span>
+
+                </td>
+                {% endfor %}
+                {% endif  %}
+                {% endfor %}
+                <td><span class="label label-danger ">${{ cl.AMT_CREDIT }}</span></td>
+                <td><span class="label label-danger ">${{ cl.AMT_CREDIT }}</span></td>
+                <td><span class="label label-danger ">${{ cl.AMT_CREDIT }}</span></td>
+                <td><span class="label label-danger ">${{ cl.AMT_CREDIT }}</span></td>
+
+                {% for d_id, d_info in predict_dict_data.items  %}
+
+                {% if d_id == cl.LOAN_ID   %}
+                {% for l in d_info %}
+                <td class="bg-{{l.color}}" style="text-overflow: clip;">
+                    <span class=''>
+                        {{l.text}}
+                    </span>
+
+                </td>
+                {% endfor %}
+                {% endif  %}
+                {% endfor %}
+
+                {% for d_id, d_info in predict_dict_data.items  %}
+
+                {% if d_id == cl.LOAN_ID   %}
+                {% for l in d_info %}
+                <td class="bg-{{l.color}}" style="text-overflow: clip;">
+                    <span class=''>
+                        {{l.text}}
+                    </span>
+
+                </td>
+                {% endfor %}
+                {% endif  %}
+                {% endfor %}
+                {% for d_id, d_info in predict_dict_data.items  %}
+
+                {% if d_id == cl.LOAN_ID   %}
+                {% for l in d_info %}
+                <td class="bg-{{l.color}}" style="text-overflow: clip;">
+                    <span class=''>
+                        {{l.text}}
+                    </span>
+
+                </td>
+                {% endfor %}
+                {% endif  %}
+                {% endfor %}
+                {% for d_id, d_info in predict_dict_data.items  %}
+
+                {% if d_id == cl.LOAN_ID   %}
+                {% for l in d_info %}
+                <td class="bg-{{l.color}}" style="text-overflow: clip;">
+                    <span class=''>
+                        {{l.text}}
+                    </span>
+
+                </td>
+                {% endfor %}
+                {% endif  %}
+                {% endfor %}
+                {% for d_id, d_info in predict_dict_data.items  %}
+                {% if d_id == cl.LOAN_ID   %}
+                {% for l in d_info %}
+                <td class="bg-{{l.color}}" style="text-overflow: clip;">
+                    <span class=''>
+                        {{l.text}}
+                    </span>
+
+                </td>
+                {% endfor %}
+                {% endif  %}
+                {% endfor %}
+                <td class="text-center">
+                    <ul class="icons-list">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-menu9"></i>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a href="{% url 'account:view_client' cl.LOAN_ID %}"><i class="icon-person"></i>
+                                        View
+                                        Client</a></li>
+                                <li><a href="{% url 'companies:application_report' cl.LOAN_ID %}"><i
+                                            class="icon-book"></i> View
+                                        Report</a></li>
+                                <li><a href="{% url 'companies:application_report_export_csv' cl.LOAN_ID %}"><i
+                                            class="icon-file-excel"></i> Export to .csv</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+        </tbody>
+    </table>
+</div>
+<!-- /individual column searching (selects) -->
+<script src="{% static 'global_assets/js/main/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/chart.bundle.js' %}"></script>
+<!-- <script>
+
+    $(function () {
+
+        let url = $('#list_data').attr("url")
+        $.ajax({
+            url: url,
+            success: function (data) {
+
+                $.each(data, function (a, b) {
+                    /// do stuff
+                    row = "<tr> <td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td></tr>"
+
+                    $("#listing").append(row);
+                });
+
+            }
+        });
+
+    });
+
+</script> -->
+
+
+<script>
+    var frm = $('#filterForm');
+    frm.submit(getAjax);
+    function getAjax() {
+        var formData = JSON.stringify($("#filterForm").serializeArray());
+        console.log("Request parameters:")
+        console.log(JSON.parse(formData))
+        $.ajax({
+            headers: { "X-CSRFToken": '{{csrf_token}}' },
+            type: "POST",
+            url: "{% url 'companies:get_predictions' %}",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: formData,
+            success: function (data) {
+                jsonData = console.log(data);
+                var dataObj = JSON.parse(data);
+                console.log("Response data:")
+                console.log(dataObj)
+                $.each(data, function (a, b) {
+                    alert("We got what we came for!" + b.probability);
+                    /// do stuff
+                    row = "<tr> <td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td>" +
+                        "<td>" + b.probability + "</td></tr>"
+
+                    $("#listing").append(row);
+                });
+                //more stuff here, too much for this example
+            },
+        }); return false;
+    }
+</script>
+
+
+class Loan_ApplicationView(APIView):
+    def get(self, request, *args, **kw):
+        # filter the queryset based on the filters applied
+        global qry
+        pagination_class = StandardResultsSetPagination
+        qry = Loan_History.objects.all()[:5]
+        NAME_INCOME_TYPE = self.request.query_params.get('business', None)
+        ORGANIZATION_TYPE = self.request.query_params.get('mortage', None)
+        OCCUPATION_TYPE = self.request.query_params.get('funeral', None)
+        CODE_GENDER = self.request.query_params.get('school', None)
+        sort_by = self.request.query_params.get('sort_by', None)
+
+
+        if NAME_INCOME_TYPE:
+            qry = Loan_History.objects.filter(NAME_INCOME_TYPE = NAME_INCOME_TYPE)[:5]
+
+        if ORGANIZATION_TYPE:
+            qry = Loan_History.objects.filter(ORGANIZATION_TYPE = ORGANIZATION_TYPE)[:5]
+
+        if OCCUPATION_TYPE:
+            qry = Loan_History.objects.filter(OCCUPATION_TYPE = OCCUPATION_TYPE)[:5]
+        if CODE_GENDER:
+            qry = Loan_History.objects.filter(CODE_GENDER = CODE_GENDER)[:5]  
+        # sort it if applied on based on price/points
+        if sort_by == "income":
+            qry = qry.order_by("AMT_INCOME_TOTAL")
+        elif sort_by == "credit_amount":
+            qry = qry.order_by("AMT_CREDIT")
+
+# get predictions for applications scoring predictions
+        behavioral_classifier_data = gpred.get_behavioral_scores(qry)
+        application_classifier_data = gpred.get_application_scores(qry)
+        return Response(data={
+            # 'labels': labels,
+            # 'pagination_class':pagination_class,
+            
+            'application_classifier_data': application_classifier_data,
+            'behavioral_classifier_data': behavioral_classifier_data,
+        })
+
+
+
+class  LoanApplication(models.Model):
+    SK_ID_CURR = models.IntegerField(null=True ,blank=True)
+    TARGET = models.IntegerField(null=True ,blank=True)
+    NAME_CONTRACT_TYPE = models.CharField(null=True ,blank=True,max_length=70)
+    CODE_GENDER = models.CharField(null=True ,blank=True,max_length=70)
+    FLAG_OWN_CAR = models.CharField(null=True ,blank=True,max_length=70)
+    FLAG_OWN_REALTY = models.CharField(null=True ,blank=True,max_length=70)
+    CNT_CHILDREN = models.IntegerField(null=True ,blank=True)
+    AMT_INCOME_TOTAL = models.FloatField(null=True ,blank=True)
+    AMT_CREDIT = models.FloatField(null=True ,blank=True)
+    AMT_ANNUITY = models.FloatField(null=True ,blank=True)
+    AMT_GOODS_PRICE = models.FloatField(null=True ,blank=True)
+    NAME_TYPE_SUITE = models.CharField(null=True ,blank=True,max_length=70)
+    NAME_INCOME_TYPE = models.CharField(null=True ,blank=True,max_length=70)
+    NAME_EDUCATION_TYPE = models.CharField(null=True ,blank=True,max_length=70)
+    NAME_FAMILY_STATUS = models.CharField(null=True ,blank=True,max_length=70)
+    NAME_HOUSING_TYPE = models.CharField(null=True ,blank=True,max_length=70)
+    REGION_POPULATION_RELATIVE = models.FloatField(null=True ,blank=True)
+    DAYS_BIRTH = models.IntegerField(null=True ,blank=True)
+    DAYS_EMPLOYED = models.IntegerField(null=True ,blank=True)
+    DAYS_REGISTRATION = models.IntegerField(null=True ,blank=True)
+    DAYS_ID_PUBLISH = models.IntegerField(null=True ,blank=True)
+    OWN_CAR_AGE = models.IntegerField(null=True ,blank=True)
+    FLAG_MOBIL = models.IntegerField(null=True ,blank=True)
+    FLAG_EMP_PHONE = models.IntegerField(null=True ,blank=True)
+    FLAG_WORK_PHONE = models.IntegerField(null=True ,blank=True)
+    FLAG_CONT_MOBILE = models.IntegerField(null=True ,blank=True)
+    FLAG_PHONE = models.IntegerField(null=True ,blank=True)
+    FLAG_EMAIL = models.IntegerField(null=True ,blank=True)
+    OCCUPATION_TYPE = models.CharField(null=True ,blank=True,max_length=70)
+    CNT_FAM_MEMBERS = models.IntegerField(null=True ,blank=True)
+    REGION_RATING_CLIENT = models.IntegerField(null=True ,blank=True)
+    REGION_RATING_CLIENT_W_CITY = models.IntegerField(null=True ,blank=True)
+    WEEKDAY_APPR_PROCESS_START = models.CharField(null=True ,blank=True,max_length=70)
+    HOUR_APPR_PROCESS_START = models.IntegerField(null=True ,blank=True)
+    REG_REGION_NOT_LIVE_REGION = models.IntegerField(null=True ,blank=True)
+    REG_REGION_NOT_WORK_REGION = models.IntegerField(null=True ,blank=True)
+    LIVE_REGION_NOT_WORK_REGION = models.IntegerField(null=True ,blank=True)
+    REG_CITY_NOT_LIVE_CITY = models.IntegerField(null=True ,blank=True)
+    REG_CITY_NOT_WORK_CITY = models.IntegerField(null=True ,blank=True)
+    LIVE_CITY_NOT_WORK_CITY = models.IntegerField(null=True ,blank=True)
+    ORGANIZATION_TYPE = models.CharField(null=True ,blank=True,max_length=70)
+    EXT_SOURCE_1 = models.FloatField(null=True ,blank=True)
+    EXT_SOURCE_2 = models.FloatField(null=True ,blank=True)
+    EXT_SOURCE_3 = models.FloatField(null=True ,blank=True)
+    APARTMENTS_AVG = models.FloatField(null=True ,blank=True)
+    BASEMENTAREA_AVG = models.FloatField(null=True ,blank=True)
+    YEARS_BEGINEXPLUATATION_AVG = models.FloatField(null=True ,blank=True)
+    YEARS_BUILD_AVG = models.FloatField(null=True ,blank=True)
+    COMMONAREA_AVG = models.FloatField(null=True ,blank=True)
+    ELEVATORS_AVG = models.FloatField(null=True ,blank=True)
+    ENTRANCES_AVG = models.FloatField(null=True ,blank=True)
+    FLOORSMAX_AVG = models.FloatField(null=True ,blank=True)
+    FLOORSMIN_AVG = models.FloatField(null=True ,blank=True)
+    LANDAREA_AVG = models.FloatField(null=True ,blank=True)
+    LIVINGAPARTMENTS_AVG = models.FloatField(null=True ,blank=True)
+    LIVINGAREA_AVG = models.FloatField(null=True ,blank=True)
+    NONLIVINGAPARTMENTS_AVG = models.FloatField(null=True ,blank=True)
+    NONLIVINGAREA_AVG = models.FloatField(null=True ,blank=True)
+    APARTMENTS_MODE = models.FloatField(null=True ,blank=True)
+    BASEMENTAREA_MODE = models.FloatField(null=True ,blank=True)
+    YEARS_BEGINEXPLUATATION_MODE = models.FloatField(null=True ,blank=True)
+    YEARS_BUILD_MODE = models.FloatField(null=True ,blank=True)
+    COMMONAREA_MODE = models.FloatField(null=True ,blank=True)
+    ELEVATORS_MODE = models.FloatField(null=True ,blank=True)
+    ENTRANCES_MODE = models.FloatField(null=True ,blank=True)
+    FLOORSMAX_MODE = models.FloatField(null=True ,blank=True)
+    FLOORSMIN_MODE = models.FloatField(null=True ,blank=True)
+    LANDAREA_MODE = models.FloatField(null=True ,blank=True)
+    LIVINGAPARTMENTS_MODE = models.FloatField(null=True ,blank=True)
+    LIVINGAREA_MODE = models.FloatField(null=True ,blank=True)
+    NONLIVINGAPARTMENTS_MODE = models.FloatField(null=True ,blank=True)
+    NONLIVINGAREA_MODE = models.FloatField(null=True ,blank=True)
+    APARTMENTS_MEDI = models.FloatField(null=True ,blank=True)
+    BASEMENTAREA_MEDI = models.FloatField(null=True ,blank=True)
+    YEARS_BEGINEXPLUATATION_MEDI = models.FloatField(null=True ,blank=True)
+    YEARS_BUILD_MEDI = models.FloatField(null=True ,blank=True)
+    COMMONAREA_MEDI = models.FloatField(null=True ,blank=True)
+    ELEVATORS_MEDI = models.FloatField(null=True ,blank=True)
+    ENTRANCES_MEDI = models.FloatField(null=True ,blank=True)
+    FLOORSMAX_MEDI = models.FloatField(null=True ,blank=True)
+    FLOORSMIN_MEDI = models.FloatField(null=True ,blank=True)
+    LANDAREA_MEDI = models.FloatField(null=True ,blank=True)
+    LIVINGAPARTMENTS_MEDI = models.FloatField(null=True ,blank=True)
+    LIVINGAREA_MEDI = models.FloatField(null=True ,blank=True)
+    NONLIVINGAPARTMENTS_MEDI = models.FloatField(null=True ,blank=True)
+    NONLIVINGAREA_MEDI = models.FloatField(null=True ,blank=True)
+    FONDKAPREMONT_MODE = models.CharField(null=True ,blank=True,max_length=70)
+    HOUSETYPE_MODE = models.CharField(null=True ,blank=True,max_length=70)
+    TOTALAREA_MODE = models.FloatField(null=True ,blank=True)
+    WALLSMATERIAL_MODE = models.CharField(null=True ,blank=True,max_length=70)
+    EMERGENCYSTATE_MODE = models.CharField(null=True ,blank=True,max_length=70)
+    OBS_30_CNT_SOCIAL_CIRCLE = models.IntegerField(null=True ,blank=True)
+    DEF_30_CNT_SOCIAL_CIRCLE = models.IntegerField(null=True ,blank=True)
+    OBS_60_CNT_SOCIAL_CIRCLE = models.IntegerField(null=True ,blank=True)
+    DEF_60_CNT_SOCIAL_CIRCLE = models.IntegerField(null=True ,blank=True)
+    DAYS_LAST_PHONE_CHANGE = models.IntegerField(null=True ,blank=True)
+    FLAG_DOCUMENT_2 = models.IntegerField(null=True ,blank=True)
+    def __str__(self):
+        return self.SK_ID_CURR

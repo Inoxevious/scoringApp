@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Fin-App</title>
+        <link rel="stylesheet" href="{% static 'finapp/css/app.css' %}">
+
+        <style>.gap {  margin-top: 50px !important;  }  </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="gap"></div>
+            <App></App>
+        </div>
+        <script src="{% static 'finapp/js/app.js' %}"></script>
+    </body>
+</html>
+
