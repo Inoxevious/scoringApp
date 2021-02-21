@@ -87,9 +87,9 @@ class GetPredictions:
                 prediction['created_by'] = 'Cron Job'
                 prediction['created_at'] = datetime.today()
                 prediction['last_update_at']  = datetime.today()
-                lon =  Loan.objects.get(id=6)
+                lon =  Loan.objects.get(id=1)
                 client = Clients.objects.get(id=1)
-                organization = Organization.objects.get(id=13)
+                organization = Organization.objects.get(id=1)
                 officer =  LoanOfficer.objects.get(id=1)
 
                 # for of in LoanOfficer.objects.all():
@@ -175,9 +175,9 @@ class GetPredictions:
                 prediction['created_by'] = 'Cron Job'
                 prediction['created_at'] = datetime.today()
                 prediction['last_update_at']  = datetime.today()
-                lon =  Loan.objects.get(id=6)
+                lon =  Loan.objects.get(id=1)
                 client = Clients.objects.get(id=1)
-                organization = Organization.objects.get(id=13)
+                organization = Organization.objects.get(id=1)
                 officer =  LoanOfficer.objects.get(id=1)
                 behavorial_scrores = BehaviouralScores(
                                 loan_id  =  lon,
