@@ -87,7 +87,7 @@ class GetPredictions:
                 prediction['created_by'] = 'Cron Job'
                 prediction['created_at'] = datetime.today()
                 prediction['last_update_at']  = datetime.today()
-                lon =  Loan.objects.get(id=1)
+                lon =  Loan.objects.get(id=2)
                 client = Clients.objects.get(id=1)
                 organization = Organization.objects.get(id=1)
                 officer =  LoanOfficer.objects.get(id=1)
@@ -131,7 +131,7 @@ class GetPredictions:
                 prediction['created_by'] = 'Cron Job'
                 prediction['created_at'] = datetime.today()
                 prediction['last_update_at']  = datetime.today()
-                lon =  Loan.objects.get(id=1)
+                lon =  Loan.objects.get(id=2)
                 client = Clients.objects.get(id=1)
                 organization = Organization.objects.get(id=1)
                 officer =  LoanOfficer.objects.get(id=1)
@@ -175,7 +175,7 @@ class GetPredictions:
                 prediction['created_by'] = 'Cron Job'
                 prediction['created_at'] = datetime.today()
                 prediction['last_update_at']  = datetime.today()
-                lon =  Loan.objects.get(id=1)
+                lon =  Loan.objects.get(id=2)
                 client = Clients.objects.get(id=1)
                 organization = Organization.objects.get(id=1)
                 officer =  LoanOfficer.objects.get(id=1)
