@@ -27,3 +27,17 @@
         y_pred = pd.Series(y_pred)
         # target_map = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
         # y_pred = y_pred.map(target_map).to_numpy()
+
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/home/inno/fintech/scoringApp
+ExecStart=/home/inno/fintech/fintechenv/bin/gunicorn --access-logfile - --worke$
+
+[Install]
+WantedBy=multi-user.target
+

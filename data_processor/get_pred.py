@@ -78,7 +78,8 @@ class GetPredictions:
             if ApplicationScores.objects.filter(loan_id=ln.id).exists():
                 prediction_data_dict = ApplicationScores.objects.filter(loan_id=ln.id)
             else:
-                prediction_data_dict[ln.LOAN_ID] = []
+                print(ln.LOAN_ID)
+                # prediction_data_dict[ln.LOAN_ID] = []
                 incomes_prediction = GetPredictions.get_income_pred(ln)
                 application_prediction = GetPredictions.get_applications_pred(ln)
                 prediction = merge(incomes_prediction, application_prediction)
@@ -118,10 +119,13 @@ class GetPredictions:
     def get_retention_scores(qry):
         prediction_data_dict = {}
         for ln in qry:
+            print("ln.LOAN_ID 0", ln.LOAN_ID)
             if RetentionScores.objects.filter(loan_id=ln.id).exists():
                 prediction_data_dict = RetentionScores.objects.filter(loan_id=ln.id)
             else:
-                prediction_data_dict[ln.LOAN_ID] = []
+                print("ln.LOAN_ID 1", ln.LOAN_ID)
+
+                # prediction_data_dict[ln.LOAN_ID] = []
                 incomes_prediction = GetPredictions.get_income_pred(ln)
                 retention_prediction = GetPredictions.get_retention_pred(ln)
                 prediction = merge(incomes_prediction, retention_prediction)
@@ -156,7 +160,7 @@ class GetPredictions:
                                 last_update_at = prediction['last_update_at'],
                 )
                 retent_scrores.save()
-            prediction_data_dict[ln.LOAN_ID].append(prediction)
+            # prediction_data_dict[ln.LOAN_ID].append(prediction)
         # print("predictions",prediction)
         return prediction_data_dict
 
@@ -166,11 +170,11 @@ class GetPredictions:
             if BehaviouralScores.objects.filter(loan_id=ln.id).exists():
                 prediction_data_dict = BehaviouralScores.objects.filter(loan_id=ln.id)
             else:
-                prediction_data_dict[ln.LOAN_ID] = []
                 incomes_prediction = GetPredictions.get_income_pred(ln)
                 behavioral_prediction = GetPredictions.get_behavioral_pred(ln)
                 prediction = merge(incomes_prediction, behavioral_prediction)
                     #result here as a probability
+                
                 prediction['loan_amount'] = ln.AMT_CREDIT
                 prediction['created_by'] = 'Cron Job'
                 prediction['created_at'] = datetime.today()
@@ -201,7 +205,7 @@ class GetPredictions:
                 )
                 behavorial_scrores.save()
 
-            prediction_data_dict[ln.LOAN_ID].append(prediction)
+            # prediction_data_dict[ln.LOAN_ID].append(prediction)
         # print("predictions",prediction)
         return prediction_data_dict
 

@@ -22,9 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def importer(request):
     path_to_artifacts = os.path.join(BASE_DIR, 'prediction/ml/algo_data/files/')
     opfile =  path_to_artifacts + 'no_header_data.csv'
-    # lon_hist_file =  path_to_artifacts + 'companies_loan_history.csv'
-    imp.get_data_income_data(opfile)
-    # imp.get_data(lon_hist_file)
+    lon_hist_file =  path_to_artifacts + 'companies_loan_history.csv'
+    # imp.get_data_income_data(opfile)
+    imp.get_data(lon_hist_file)
     data = LoanApplication.objects.all()
     context = {
         'data':data,
@@ -141,10 +141,11 @@ def add_algo(request):
 
 
 def run_predictions(request):
-    qry = Loan_History.objects.all()[:5]
-    retention_scoring_data = gpred.get_retention_scores(qry)
-    application_classifier_data = gpred.get_application_scores(qry)
-    behavioral_classifier_data = gpred.get_behavioral_scores(qry)
+    qry = Loan_History.objects.all()[:10]
+    print("Loan qry", qry)
+    gpred.get_retention_scores(qry)
+    gpred.get_application_scores(qry)
+    gpred.get_behavioral_scores(qry)
     context = {
         'message':'successful ran predictions',
     }   

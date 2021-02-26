@@ -13,3 +13,7 @@ class IncomeDataAdmin(admin.ModelAdmin):
 class LoanApplicationAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(Loan_History)
+class Loan_HistoryAdmin(admin.ModelAdmin):
+    pass
+
