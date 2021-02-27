@@ -13,7 +13,7 @@ from .models import Clients, Loan, LoanOfficer, Organization, AccountUser, Depar
 from django.http import JsonResponse
 from django.contrib import messages, auth
 from django.forms.models import model_to_dict
-
+from rest_framework.parsers import FileUploadParser
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
@@ -88,6 +88,7 @@ class APICreateUserAPIView(generics.CreateAPIView):
 class OrganizationAPIView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    parser_class = (FileUploadParser,)
     # serializer = OrganizationSerializer(data=request.data)
     def post(self, request, format=None):
         og_count = Organization.objects.all().count()
@@ -103,15 +104,26 @@ class OrganizationAPIView(APIView):
                 organization.owner = account_user
                 organization.business_name =  request.data.get('business_name')
                 organization.business_trading_name =  request.data.get('business_trading_name')
-                organization.total_branches =  request.data.get('total_branches')
+                organization.registration_number =  request.data.get('registration_number')
+                organization.statement =  request.data.get('statement')
+                organization.bp_number =  request.data.get('bp_number')
+                organization.entity_type =  request.data.get('entity_type')
+                organization.business_category =  request.data.get('business_category')
                 organization.address =  request.data.get('address')
                 organization.phone =  request.data.get('phone')    
                 organization.save()
                 print('org id',organization.orga_id )
                 # data = OrganizationSerializer(organization, many=True).data
                 request.data['orga_id'] = organization.orga_id 
+                request.data['is_verified'] = organization.is_verified 
+                request.data['created_date'] = organization.created_date 
+                request.data['logo'] = organization.logo 
+
                 data = {"organization":request.data}
                 print('Final Data',request.data)
+
+
+
                 return Response(request.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

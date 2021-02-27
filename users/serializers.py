@@ -54,8 +54,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     #     queryset=AccountUser.objects.all())
     class Meta:
         model = Organization
-        fields = '__all__'
-        exclude= 'owner'
+        
+        exclude= 'owner', 'total_branches'
 
 class DepartmentSerializer(serializers.ModelSerializer):
     # owner = serializers.PrimaryKeyRelatedField(

@@ -94,6 +94,9 @@ class Organization(models.Model):
     acceptPush = models.BooleanField(default=False)
     pushToken = models.CharField(max_length=100, null=True, blank=True,db_index=True)
     is_active = models.BooleanField(('active'), default=True)
+    is_verified = models.BooleanField(('active'), default=False)
+    created_date = models.DateTimeField(auto_now=True)
+
     class Meta:
         verbose_name = ('Organization')
         verbose_name_plural = ('Organizations')
