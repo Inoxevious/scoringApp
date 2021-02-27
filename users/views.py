@@ -221,7 +221,7 @@ class OfficerCreate_ListAPIView(APIView):
             if account_user.user_role.name == 'manager':
                 organization = Organization.objects.get(owner=account_user)
                 if officer_id:
-                    officer = LoanOfficer.objects.get(officer_id=officer_id)
+                    officer = LoanOfficer.objects.filter(officer_id=officer_id)
                     print("ff 1", officer)
                 else:
                     officer = LoanOfficer.objects.filter(organization=organization)
@@ -230,12 +230,12 @@ class OfficerCreate_ListAPIView(APIView):
                 officer = LoanOfficer.objects.get(profile=account_user)
                 organization = officer.organization
                 if officer_id:
-                    officer = LoanOfficer.objects.get(officer_id=officer_id)
+                    officer = LoanOfficer.objects.filter(officer_id=officer_id)
                     print("ff 3", officer)
                 else:
                     officer = LoanOfficer.objects.filter(organization=organization)
                     print("ff 4", officer)
-            # officer = serializers.serialize("json",officer)
+            officer = serializers.serialize("json",officer)
             officer = json.loads(officer)
         return  HttpResponse(officer)
 
@@ -315,14 +315,14 @@ class ClientCreate_ListAPIView(APIView):
             if account_user.user_role.name == 'manager':
                 organization = Organization.objects.get(owner=account_user)
                 if client_id:
-                    client = Clients.objects.get(client_id=client_id)
+                    client = Clients.objects.filter(client_id=client_id)
                 else:
                     client = Clients.objects.filter(organization=organization)
             else:
                 officer = LoanOfficer.objects.get(profile=account_user)
                 organization = officer.organization
                 if client_id:
-                    client = Clients.objects.get(client_id=client_id)
+                    client = Clients.objects.filter(client_id=client_id)
                 else:
                     client = Clients.objects.filter(organization=organization)
             client = serializers.serialize("json",client)
@@ -400,14 +400,14 @@ class LoanCreate_ListAPIView(APIView):
             if account_user.user_role.name == 'manager':
                 organization = Organization.objects.get(owner=account_user)
                 if loan_id:
-                    loan = Loan.objects.get(loan_id=loan_id)
+                    loan = Loan.objects.filter(loan_id=loan_id)
                 else:
                     loan = Loan.objects.filter(organization=organization)
             else:
                 officer = LoanOfficer.objects.get(profile=account_user)
                 organization = officer.organization
                 if loan_id:
-                    loan = Loan.objects.get(loan_id=loan_id)
+                    loan = Loan.objects.filter(loan_id=loan_id)
                 else:
                     loan = Loan.objects.filter(organization=organization)
             loan = serializers.serialize("json",loan)
