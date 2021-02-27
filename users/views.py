@@ -26,9 +26,15 @@ class get_logged_user(APIView):
         global manager, officer , organization
         if request.user:
             account_user = AccountUser.objects.get(user=request.user)
+            data = {'user_role': account_user.user_role.name,
+            'first_name': request.user.first_name ,
+            'last_name': request.user.last_name,
+            'user_id':request.user.id,
+            'user_role_id':account_user.user_role.id,
+            }
             user_serializer = AccountUserSerializer(account_user).data
             # data = {'account_user': user_serializer, 'user':request.user}
-            return Response(user_serializer)
+            return JsonResponse(data, safe=True)
 		
     
 
