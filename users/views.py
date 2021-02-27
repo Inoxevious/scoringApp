@@ -14,6 +14,10 @@ from django.http import JsonResponse
 from django.contrib import messages, auth
 from django.forms.models import model_to_dict
 from rest_framework.parsers import FileUploadParser
+from django.core import serializers
+import json
+from django.http import HttpResponse
+
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
@@ -131,29 +135,24 @@ class OrganizationAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        queryList = ApplicationScores.objects.all()
         manager_id = self.request.query_params.get('manager_id', None)
-        if manager_id:
-            if Manager.objects.filter(manager_id=manager_id).exists():
-                manager = Manager.objects.get(id=manager_id)
-                organization = Organization.objects.get(owner=manager.profile)
-                data = OrganizationSerializer(organization).data
-                return Response(data, status=200)
-        else:
+        if request.user:
             account_user = AccountUser.objects.get(user=request.user)
-            organization = Organization.objects.get(owner=account_user)
-            data = OrganizationSerializer(organization).data
-        return Response(data, status=200)
+            if account_user.user_role.name == 'manager':
+                organization = Organization.objects.filter(owner=account_user)
+            else:
+                officer = LoanOfficer.objects.filter(profile=account_user)
+                organization = officer.organization
+
+            organization = serializers.serialize("json",organization)
+            organization = json.loads(organization)
+        return  HttpResponse(organization)
 
 
 class OfficerCreate_ListAPIView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = CreateUserSerializer
-    # serializer = OrganizationSerializer(data=request.data)
-    # def post(self, request, format=None):
-    #     og_count = Organization.objects.all().count()
-    #     serializer = CreateUserSerializer(data=request.data)
     def post(self, request, *args, **kwargs):
         # create user object
         serializer = CreateUserSerializer(data=request.data)
@@ -171,8 +170,6 @@ class OfficerCreate_ListAPIView(APIView):
             user_role.save()
         print('user_role user', user_role)
 
-
-        
 # create system account for new officer
         officer_account = AccountUser(user=serializer.instance, user_role=user_role,pushToken=token)
         officer_account.save()
@@ -216,6 +213,32 @@ class OfficerCreate_ListAPIView(APIView):
         request.data['officer_id'] = officer_id
         # print('Final Data',request.data)
         return Response(request.data, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        if request.user:
+            account_user = AccountUser.objects.get(user=request.user)
+            officer_id = self.request.query_params.get('officer_id', None)
+            if account_user.user_role.name == 'manager':
+                organization = Organization.objects.get(owner=account_user)
+                if officer_id:
+                    officer = LoanOfficer.objects.get(officer_id=officer_id)
+                    print("ff 1", officer)
+                else:
+                    officer = LoanOfficer.objects.filter(organization=organization)
+                    print("ff 2", officer)
+            else:
+                officer = LoanOfficer.objects.get(profile=account_user)
+                organization = officer.organization
+                if officer_id:
+                    officer = LoanOfficer.objects.get(officer_id=officer_id)
+                    print("ff 3", officer)
+                else:
+                    officer = LoanOfficer.objects.filter(organization=organization)
+                    print("ff 4", officer)
+            # officer = serializers.serialize("json",officer)
+            officer = json.loads(officer)
+        return  HttpResponse(officer)
+
 
 class ClientCreate_ListAPIView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -284,6 +307,28 @@ class ClientCreate_ListAPIView(APIView):
         # print('Final Data',request.data)
         return Response(request.data, status=status.HTTP_201_CREATED)
 
+    def get(self, request):
+        if request.user:
+            client_id = self.request.query_params.get('client_id', None)
+
+            account_user = AccountUser.objects.get(user=request.user)
+            if account_user.user_role.name == 'manager':
+                organization = Organization.objects.get(owner=account_user)
+                if client_id:
+                    client = Clients.objects.get(client_id=client_id)
+                else:
+                    client = Clients.objects.filter(organization=organization)
+            else:
+                officer = LoanOfficer.objects.get(profile=account_user)
+                organization = officer.organization
+                if client_id:
+                    client = Clients.objects.get(client_id=client_id)
+                else:
+                    client = Clients.objects.filter(organization=organization)
+            client = serializers.serialize("json",client)
+            client = json.loads(client)
+        return  HttpResponse(client)
+
 class LoanCreate_ListAPIView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -347,6 +392,27 @@ class LoanCreate_ListAPIView(APIView):
         # print('Final Data',request.data)
         return Response(request.data, status=status.HTTP_201_CREATED)
 
+    def get(self, request):
+        if request.user:
+            account_user = AccountUser.objects.get(user=request.user)
+            loan_id = self.request.query_params.get('loan_id', None)
+
+            if account_user.user_role.name == 'manager':
+                organization = Organization.objects.get(owner=account_user)
+                if loan_id:
+                    loan = Loan.objects.get(loan_id=loan_id)
+                else:
+                    loan = Loan.objects.filter(organization=organization)
+            else:
+                officer = LoanOfficer.objects.get(profile=account_user)
+                organization = officer.organization
+                if loan_id:
+                    loan = Loan.objects.get(loan_id=loan_id)
+                else:
+                    loan = Loan.objects.filter(organization=organization)
+            loan = serializers.serialize("json",loan)
+            loan = json.loads(loan)
+        return  HttpResponse(loan)
 
 
 class APIUserListCreateView(generics.ListCreateAPIView):
