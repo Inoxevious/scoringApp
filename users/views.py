@@ -94,6 +94,7 @@ class OrganizationAPIView(APIView):
             if organization.orga_id==None :
                 from datetime import datetime, date
                 organization.orga_id = 'MFI-{}-{}'.format(date.today(),og_count)
+                organization.owner = account_user
                 organization.business_name =  request.data.get('business_name')
                 organization.business_trading_name =  request.data.get('business_trading_name')
                 organization.total_branches =  request.data.get('total_branches')

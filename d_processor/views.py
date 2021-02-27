@@ -23,8 +23,8 @@ def importer(request):
     path_to_artifacts = os.path.join(BASE_DIR, 'prediction/ml/algo_data/files/')
     opfile =  path_to_artifacts + 'no_header_data.csv'
     lon_hist_file =  path_to_artifacts + 'companies_loan_history.csv'
-    # imp.get_data_income_data(opfile)
-    imp.get_data(lon_hist_file)
+    imp.get_data_income_data(opfile)
+    # imp.get_data(lon_hist_file)
     data = LoanApplication.objects.all()
     context = {
         'data':data,

@@ -51,7 +51,7 @@ else:
             # 'PASSWORD': 'postgres',
             # 'HOST': '127.0.0.1',
             'PORT': '5432',
-            'NAME': 'findb',
+            'NAME': 'scoringApp',
             'PASSWORD': 'fintech123456789',
             'HOST': 'fintech.coxeytfzdoap.eu-west-2.rds.amazonaws.com',
  
