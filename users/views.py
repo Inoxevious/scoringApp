@@ -11,13 +11,26 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Clients, Loan, LoanOfficer, Organization, AccountUser, Department, Role
 from django.http import JsonResponse
+from django.contrib import messages, auth
+from django.forms.models import model_to_dict
 
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-class APILoginView(LoginView):
-    pass
+
+class get_logged_user(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        global manager, officer , organization
+        if request.user:
+            account_user = AccountUser.objects.get(user=request.user)
+            user_serializer = AccountUserSerializer(account_user).data
+            # data = {'account_user': user_serializer, 'user':request.user}
+            return Response(user_serializer)
+		
+    
 
 class APIPasswordUpdateView(PasswordChangeView):
     authentication_classes = [TokenAuthentication]
@@ -35,10 +48,14 @@ class APICreateUserAPIView(generics.CreateAPIView):
 # create auth token
         token = Token.objects.create(user=serializer.instance)
         token_data = {"token": token.key}
-        user_role = Role.objects.get(name='manager')
+        if Role.objects.filter(name='manager').exists():
+            user_role = Role.objects.get(name='manager')
+        else:
+            user_role = Role(name='manager')
+            user_role.save()
         print('user_role user', user_role)
 # create business account
-        account_user = AccountUser(user=serializer.instance, user_role=user_role,pushToken=token)
+        account_user = AccountUser(user=serializer.instance, user_role=user_role,pushToken=token.key)
         account_user.save()
         print('accunt user', account_user)
 
@@ -58,7 +75,7 @@ class APICreateUserAPIView(generics.CreateAPIView):
         print('accunt user', manager_account)
 
         # response_dict = {"user_data": serializer.data,"token_data": token_data }
-        token_data = {"token": token.key}
+        token_data = {"token": token.key, "manager_account":manager_account}
 
         return Response( {**serializer.data, **token_data},status=status.HTTP_201_CREATED)
 
@@ -86,13 +103,28 @@ class OrganizationAPIView(APIView):
                 print('org id',organization.orga_id )
                 # data = OrganizationSerializer(organization, many=True).data
                 request.data['orga_id'] = organization.orga_id 
-                # data = {"organization":request.data}
+                data = {"organization":request.data}
                 print('Final Data',request.data)
                 return Response(request.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             # return JsonResponse(data, status = 200)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        queryList = ApplicationScores.objects.all()
+        manager_id = self.request.query_params.get('manager_id', None)
+        if manager_id:
+            if Manager.objects.filter(manager_id=manager_id).exists():
+                manager = Manager.objects.get(id=manager_id)
+                organization = Organization.objects.get(owner=manager.profile)
+                data = OrganizationSerializer(organization).data
+                return Response(data, status=200)
+        else:
+            account_user = AccountUser.objects.get(user=request.user)
+            organization = Organization.objects.get(owner=account_user)
+            data = OrganizationSerializer(organization).data
+        return Response(data, status=200)
 
 
 class OfficerCreate_ListAPIView(APIView):
@@ -113,7 +145,11 @@ class OfficerCreate_ListAPIView(APIView):
         # Create token
         token = Token.objects.create(user=serializer.instance)
         token_data = {"token": token.key}
-        user_role = Role.objects.get(name='officer')
+        if Role.objects.filter(name='officer').exists():
+            user_role = Role.objects.get(name='officer')
+        else:
+            user_role = Role(name='officer')
+            user_role.save()
         print('user_role user', user_role)
 
 
@@ -180,7 +216,11 @@ class ClientCreate_ListAPIView(APIView):
         # Create token
         token = Token.objects.create(user=serializer.instance)
         token_data = {"token": token.key}
-        user_role = Role.objects.get(name='client')
+        if Role.objects.filter(name='client').exists():
+            user_role = Role.objects.get(name='client')
+        else:
+            user_role = Role(name='client')
+            user_role.save()
         print('user_role user', user_role)
 
 

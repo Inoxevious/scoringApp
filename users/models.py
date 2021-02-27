@@ -48,7 +48,7 @@ class AccountUser(models.Model):
     age = models.IntegerField(null=True ,blank=True)
     email_confirmed = models.BooleanField(default=False)
     accepted_terms = models.BooleanField(default=False)
-    address =models.TextField(null=True ,blank=True)
+    home_address = models.TextField(null=True ,blank=True)
     date_birth =models.DateField(null=True ,blank=True)
     phone =models.CharField(null=True ,blank=True,max_length=70)
     id_number =models.CharField(null=True ,blank=True,max_length=20)
@@ -90,7 +90,9 @@ class Organization(models.Model):
     acceptPush = models.BooleanField(default=False)
     pushToken = models.CharField(max_length=100, null=True, blank=True,db_index=True)
     is_active = models.BooleanField(('active'), default=True)
-
+    class Meta:
+        verbose_name = ('Organization')
+        verbose_name_plural = ('Organizations')
 
 
 

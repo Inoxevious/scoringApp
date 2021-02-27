@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from .models import Clients, Loan, LoanOfficer, Organization, AccountUser, Department
+from .models import Clients, Loan, LoanOfficer, Organization, AccountUser, Department, Manager
 from django.contrib.auth.models import User
 # class UserSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -46,7 +46,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 class AccountUserSerializer(serializers.ModelSerializer):
 	class Meta:
 	    model = AccountUser
-	    fields = '__all__'
+	    fields = ('user_role','user')
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -54,19 +54,35 @@ class OrganizationSerializer(serializers.ModelSerializer):
     #     queryset=AccountUser.objects.all())
     class Meta:
         model = Organization
-        fields = ("business_name","business_trading_name","total_branches","address","phone")
+        fields = '__all__'
 
+class DepartmentSerializer(serializers.ModelSerializer):
+    # owner = serializers.PrimaryKeyRelatedField(
+    #     queryset=AccountUser.objects.all())
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+
+class ManagerSerializer(serializers.ModelSerializer):
+    profile = AccountUserSerializer(many=True,read_only=True)
+    organization = OrganizationSerializer(many=True,read_only=True)
+    department = DepartmentSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = Manager
+        fields = '__all__'
 
 class LoanOfficerSerializer(serializers.ModelSerializer):
-    info = serializers.PrimaryKeyRelatedField(
+    profile = serializers.PrimaryKeyRelatedField(
         queryset=AccountUser.objects.all())
-    insti = serializers.PrimaryKeyRelatedField(
+    organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all())
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all())
     class Meta:
         model = LoanOfficer
-        fields = ('officer_id','info','insti','department')
+        fields = ('officer_id','profile','organization','department')
         read_only_fields = ('id','officer_id',)
         
 class ClientsSerializer(serializers.ModelSerializer):

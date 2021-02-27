@@ -46,14 +46,14 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'finparaApp',
             'USER': 'postgres',
-            # 'NAME': 'cent_cent',
-            # 'PASSWORD': 'postgres',
-            # 'HOST': '127.0.0.1',
+            'PASSWORD': 'postgres',
+            'HOST': '127.0.0.1',
             'PORT': '5432',
-            'NAME': 'findb',
-            'PASSWORD': 'fintech123456789',
-            'HOST': 'fintech.coxeytfzdoap.eu-west-2.rds.amazonaws.com',
+            # 'NAME': 'findb',
+            # 'PASSWORD': 'fintech123456789',
+            # 'HOST': 'fintech.coxeytfzdoap.eu-west-2.rds.amazonaws.com',
  
         }
     }
