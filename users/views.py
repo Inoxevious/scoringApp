@@ -75,7 +75,7 @@ class APICreateUserAPIView(generics.CreateAPIView):
         print('accunt user', manager_account)
 
         # response_dict = {"user_data": serializer.data,"token_data": token_data }
-        token_data = {"token": token.key, "manager_account":manager_account}
+        token_data = {"token": token.key}
 
         return Response( {**serializer.data, **token_data},status=status.HTTP_201_CREATED)
 
