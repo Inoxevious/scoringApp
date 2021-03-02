@@ -143,10 +143,11 @@ class OrganizationAPIView(APIView):
                 officer = LoanOfficer.objects.filter(profile=account_user)
                 organization = officer.organization
 
-            organization = serializers.serialize("json",organization)
-            organization = json.loads(organization)
+            serializer = OrganizationSerializer(organization).data
+            # organization = serializers.serialize("json",organization)
+            # organization = json.loads(organization)
         # return  HttpResponse(organization)
-        return JsonResponse(organization, safe=False)
+        return Response(serializer)
 
 
 class OfficerCreate_ListAPIView(APIView):
