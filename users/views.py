@@ -17,7 +17,6 @@ from rest_framework.parsers import FileUploadParser
 from django.core import serializers
 import json
 from django.http import HttpResponse
-
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
@@ -146,7 +145,8 @@ class OrganizationAPIView(APIView):
 
             organization = serializers.serialize("json",organization)
             organization = json.loads(organization)
-        return  HttpResponse(organization)
+        # return  HttpResponse(organization)
+        return JsonResponse(organization, safe=False)
 
 
 class OfficerCreate_ListAPIView(APIView):
@@ -237,7 +237,7 @@ class OfficerCreate_ListAPIView(APIView):
                     print("ff 4", officer)
             officer = serializers.serialize("json",officer)
             officer = json.loads(officer)
-        return  HttpResponse(officer)
+        return  JsonResponse(officer, safe=False)
 
 
 class ClientCreate_ListAPIView(APIView):
@@ -327,7 +327,7 @@ class ClientCreate_ListAPIView(APIView):
                     client = Clients.objects.filter(organization=organization)
             client = serializers.serialize("json",client)
             client = json.loads(client)
-        return  HttpResponse(client)
+        return  JsonResponse(client, safe=False)
 
 class LoanCreate_ListAPIView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -412,7 +412,7 @@ class LoanCreate_ListAPIView(APIView):
                     loan = Loan.objects.filter(organization=organization)
             loan = serializers.serialize("json",loan)
             loan = json.loads(loan)
-        return  HttpResponse(loan)
+        return  JsonResponse(loan, safe=False)
 
 
 class APIUserListCreateView(generics.ListCreateAPIView):
