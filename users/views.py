@@ -426,13 +426,17 @@ class APIUserListCreateView(generics.ListCreateAPIView):
                     :param email
                     :param username
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
     queryset = AccountUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AccountUserSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('email', 'username',)
 
 class APIUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     """
             get:
                 get a specific user
@@ -444,4 +448,4 @@ class APIUserDetailView(generics.RetrieveUpdateDestroyAPIView):
                 Update a user.
     """
     queryset = AccountUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AccountUserSerializer
